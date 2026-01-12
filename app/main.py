@@ -28,7 +28,7 @@ def read_root():
     return {"Hello": "World"}
 
 @app.get("/reading", response_model=List[schemas.Book])
-def reading_books(db:Session = Depends(get_db), limit : int = Query(default=0, le=100), skip : int = Query(default=0, ge=0) ):
+def reading_books(db:Session = Depends(get_db), limit : int = Query(default=5, le=100), skip : int = Query(default=0, ge=0) ):
     result = crud.get_books(db=db, skip=skip, limit=limit)
     if result is None:
       raise HTTPException(status_code=404, detail="なにも保存されていないです")
@@ -55,6 +55,12 @@ def delete_book(id: int, db : Session = Depends(get_db) ):
         raise HTTPException(status_code=404 , detail="Search error: No account with this name exists")
     return result
 
+#名前検索機能
+@app.get("/books/search", response_model=List[schemas.Book])
+def search_books( title : str, db : Session = Depends(get_db)):
+    result = crud.search_books_by_title(title=title, db=db)
+
+    return result
 
 
 

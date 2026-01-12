@@ -21,7 +21,6 @@ class BookCreate(BookBase):
     pass
 
 
-
 # データを返す時の形（IDなどを含める）
 class Book(BookBase):
     id: int
