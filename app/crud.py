@@ -14,7 +14,7 @@ def get_books(db: Session, skip:int = 0, limit: int = 100):
     return db.query(models.Books).offset(skip).limit(limit).all()
 
 
-#特定の行を更新する
+#特定の行を更新する, 任意の列を更新する
 def update_book(db: Session, book: schemas.BookUpdate, id : int):
     #idで一致する行を検索
     db_book = db.query(models.Books).filter(models.Books.id == id).first()
@@ -43,3 +43,9 @@ def del_book(id: int, db : Session) -> None | dict :
     db.delete(db_book)
     db.commit()
     return {"title": title ,"message": f"User with ID {id} deleted successfully"}
+
+#名前検索できる機能
+def search_books_by_title(db: Session, title : str) -> None| dict:
+    # .contains(keyword) を使うことで「あいまい検索（LIKE %keyword%）」になる
+    db_book = db.query(models.Books).filter(models.Books.title.contains(title)).all()
+    return db_book
