@@ -3,11 +3,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from . import schemas, models
 from typing import List
+from .to_hira import generate_hira
 
 sort_op = ["desc", "asc", "new", "title"]
 
 def created_book(db: Session, book: schemas.BookCreate):
     db_book = models.Books(**book.model_dump())
+    db_book.title_kana = generate_hira(db_book.title)
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
@@ -25,7 +27,7 @@ def get_sorted_books(db: Session, skip:int = 0, limit: int = 100, sort_by : str 
             db_book = query.order_by(desc(models.Books.id)).offset(skip).limit(limit).all()
             return db_book
         elif sort_by == "title" or sort_by == "asc":
-            db_book = query.order_by(asc(models.Books.title)).offset(skip).limit(limit).all()
+            db_book = query.order_by(asc(models.Books.title_kana)).offset(skip).limit(limit).all()
             return db_book
 
     return query.offset(skip).limit(limit).all()
@@ -66,3 +68,5 @@ def search_books_by_title(db: Session, title : str) -> None| dict:
     # .contains(keyword) を使うことで「あいまい検索（LIKE %keyword%）」になる
     db_book = db.query(models.Books).filter(models.Books.title.contains(title)).all()
     return db_book
+
+
