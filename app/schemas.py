@@ -11,6 +11,7 @@ class BookStatus(str, Enum):
 
 class BookBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=100, description="本のタイトル")
+    title_hira: Optional[str] = None
     author: str = Field(..., min_length=1, max_length=50, description="著者名")
     status: BookStatus = Field(default=BookStatus.WISH, description="読書状態")
     read_date: Optional[date] = Field(None, description="読み終えた日")
@@ -31,8 +32,12 @@ class Book(BookBase):
 
 class BookUpdate(BookBase):
     title : Optional[str] = Field(None, min_length=1, max_length=100, description="本のタイトル")
-    author : Optional[str] = Field(..., min_length=1, max_length=50, description="著者名")
+    title_hira: Optional[str] = None
+    author : Optional[str] = Field(None, min_length=1, max_length=50, description="著者名")
     status: Optional[BookStatus] = None
     read_date: Optional[date] = Field(None, description="読み終えた日")
     memo: Optional[str] = Field(None, max_length=500, description="感想メモ")
 
+
+class SortBase(BaseModel):
+    sort_by : Optional[str] = None

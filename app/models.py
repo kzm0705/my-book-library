@@ -6,6 +6,7 @@ class Books(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
+    title_kana = Column(String)
     author = Column(String)
     status = Column(String, default="読みたい")
     read_date = Column(Date, nullable=True)

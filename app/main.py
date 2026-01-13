@@ -1,7 +1,7 @@
 from fastapi import FastAPI ,HTTPException
 from fastapi import Depends, Query
 from . import schemas, models, crud
-from typing import List
+from typing import List, Optional
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
@@ -27,10 +27,12 @@ def get_db():
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/reading", response_model=List[schemas.Book])
-def reading_books(db:Session = Depends(get_db), limit : int = Query(default=5, le=100), skip : int = Query(default=0, ge=0) ):
-    result = crud.get_books(db=db, skip=skip, limit=limit)
-    if result is None:
+@app.get("/books/", response_model=List[schemas.Book])
+def reading_books( db:Session = Depends(get_db), limit : int = Query(default=5, le=100), skip : int = Query(default=0, ge=0), sort_by : str = Query(default=None)):
+    
+    result = crud.get_sorted_books(db=db, skip=skip, limit=limit, sort_by = sort_by)
+
+    if result is None or not result:
       raise HTTPException(status_code=404, detail="なにも保存されていないです")
     return result
 
