@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, field_serializer
 from datetime import date
 from typing import Optional
 from enum import Enum
+from datetime import datetime
 
 class BookStatus(str, Enum):
     WISH = "読みたい"
@@ -25,9 +26,20 @@ class BookCreate(BookBase):
 # データを返す時の形（IDなどを含める）
 class Book(BookBase):
     id: int
+    create_date : Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    @field_serializer("create_date")
+    def serialize_dt(self, dt:datetime, _info):
+        if dt is None:
+            return None
+        return dt.strftime("%Y/%m/%d %H:%M:%S")
+    
+    model_config = {
+        "from_attributes": True
+    }
+    # class Config:
+    #     from_attributes = True
+    #     json_encoders = { datetime: lambda v: v.strftime("%Y/%m/%d %H:%M:%S")}
 
 
 class BookUpdate(BookBase):
@@ -41,3 +53,5 @@ class BookUpdate(BookBase):
 
 class SortBase(BaseModel):
     sort_by : Optional[str] = None
+
+

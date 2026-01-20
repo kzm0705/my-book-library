@@ -5,7 +5,7 @@ from app import models, crud, to_hira
 def update_existing_books():
 
     db = SessionLocal()
-    
+
     try:
         books = db.query(models.Books).all()
         print(f'全{len(books)}件のデータを更新します')

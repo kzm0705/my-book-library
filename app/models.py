@@ -1,5 +1,7 @@
 from .database import Base
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, DateTime
+from sqlalchemy import func
+from datetime import datetime
 
 class Books(Base):
     __tablename__ = "books"
@@ -8,6 +10,7 @@ class Books(Base):
     title = Column(String, nullable=False)
     title_kana = Column(String)
     author = Column(String)
+    create_date = Column(DateTime(timezone=True), default=datetime.now())
     status = Column(String, default="読みたい")
     read_date = Column(Date, nullable=True)
     memo = Column(String, nullable=True)
