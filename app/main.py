@@ -1,19 +1,20 @@
-from fastapi import FastAPI ,HTTPException
+from fastapi import FastAPI ,HTTPException, Request
 from fastapi import Depends, Query
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
 from . import schemas, models, crud
 from typing import List, Optional
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
+import os
 
-
-
+#fastapiのインスタンス
 app = FastAPI(title="book-library-API")
 
 
 models.Base.metadata.create_all(bind=engine)
 
-
-# fake_db : List[schemas.Book] = []
 
 def get_db():
     db = SessionLocal()
@@ -22,10 +23,9 @@ def get_db():
     finally:
         db.close()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+# @app.get("/")
+# def read_root():
+#     return {"Hello": "World"}
 
 @app.get("/books/", response_model=List[schemas.Book])
 def reading_books( db:Session = Depends(get_db), limit : int = Query(default=5, le=100), skip : int = Query(default=0, ge=0), sort_by : str = Query(default=None)):
@@ -35,7 +35,6 @@ def reading_books( db:Session = Depends(get_db), limit : int = Query(default=5, 
     if result is None or not result:
       raise HTTPException(status_code=404, detail="なにも保存されていないです")
     return result
-
 
 @app.post("/create", response_model=schemas.Book)
 def create_book(book : schemas.BookCreate, db : Session = Depends(get_db)):
@@ -65,6 +64,25 @@ def search_books( title : str, db : Session = Depends(get_db)):
     return result
 
 
+#フロントエンドのテンプレートを返す
+# main.pyがある場所からの絶対パスを取得（推奨）
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+
+@app.get("/", response_class=HTMLResponse)
+async def read_item(request: Request):
+    # HTMLに渡したいデータ
+    user_data = {"name": "カズマ", "message": "デプロイ準備中！"}
+    books = [
+        {"title": "Python入門", "status": "読了"},
+        {"title": "FastAPI実践", "status": "読書中"},
+    ]
+    
+    # index.htmlにデータを流し込む
+    return templates.TemplateResponse(
+        "index.html", 
+        {"request": request, "user": user_data, "books" : books}
+    )
 
 
 

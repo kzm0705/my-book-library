@@ -63,6 +63,7 @@ def del_book(id: int, db : Session) -> None | dict :
     db.commit()
     return {"title": title ,"message": f"User with ID {id} deleted successfully"}
 
+
 #名前検索できる機能
 def search_books_by_title(db: Session, title : str) -> None| dict:
     # .contains(keyword) を使うことで「あいまい検索（LIKE %keyword%）」になる
@@ -70,3 +71,4 @@ def search_books_by_title(db: Session, title : str) -> None| dict:
     return db_book
 
 
+[[[0, 1, 3], [0, 3, 7]], [[0, 5, 11], [0, 7, 15]]]

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastAPI App</title>
+</head>
+<body>
+    <h1>こんにちは、{{ user.name }}さん</h1>
+    <p>ステータス: {{ user.message }}</p>
+
+    <ul>
+    {% for book in books %}
+    <li>{{ book.title }} - {{ book.status }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
