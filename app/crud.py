@@ -3,17 +3,19 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from . import schemas, models
 from typing import List
-from .to_hira import generate_hira
+from scripts import to_hira
 
 sort_op = ["desc", "asc", "new", "title"]
 
 def created_book(db: Session, book: schemas.BookCreate):
+
     db_book = models.Books(**book.model_dump())
-    db_book.title_kana = generate_hira(db_book.title)
+    db_book.title_kana = to_hira.generate_hira(db_book.title)
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
     return db_book
+
 
 def get_books(db: Session, skip:int = 0, limit: int = 100) -> List[schemas.Book]:
     query = db.query(models.Books)
@@ -45,9 +47,7 @@ def update_book(db: Session, book: schemas.BookUpdate, id : int):
     #     print(f'key: {k} value : {v}')
     for k,v in new_book.items():
         setattr(db_book, k, v)
-    # for k, v in db_book.__dict__.items():
-    #     print(f'key: {k} value : {v}')
-    # db.add(db_book)
+
     db.commit()
     db.refresh(db_book)
     return db_book
@@ -71,4 +71,4 @@ def search_books_by_title(db: Session, title : str) -> None| dict:
     return db_book
 
 
-[[[0, 1, 3], [0, 3, 7]], [[0, 5, 11], [0, 7, 15]]]
+

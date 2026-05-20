@@ -17,6 +17,8 @@ class BookBase(BaseModel):
     status: BookStatus = Field(default=BookStatus.WISH, description="読書状態")
     read_date: Optional[date] = Field(None, description="読み終えた日")
     memo: Optional[str] = Field(None, max_length=500, description="感想メモ")
+    isbn: Optional[str] = Field(None, max_length=20, description="ISBNコード")
+    img_url: Optional[str] = Field(None, description="書籍画像URL")
 
 # 本を登録する時の形
 class BookCreate(BookBase):

@@ -14,3 +14,5 @@ class Books(Base):
     status = Column(String, default="読みたい")
     read_date = Column(Date, nullable=True)
     memo = Column(String, nullable=True)
+    isbn = Column(String, unique=True, index=True, nullable=True)
+    img_url = Column(String, nullable=True)

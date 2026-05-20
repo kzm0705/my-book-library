@@ -1,16 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>FastAPI App</title>
+    <meta charset="UTF-8">
+    <title>マイ本棚</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f4f9; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
-    <h1>こんにちは、{{ user.name }}さん</h1>
-    <p>ステータス: {{ user.message }}</p>
+    <h1>📚 マイ本棚リスト</h1>
+    <table id="book-table">
+        <thead>
+            <tr>
+                <th>画像</th>
+                <th>ID</th>
+                <th>タイトル</th>
+                <th>カナ</th>
+                <th>登録日</th>
+                <th>状態</th>
+            </tr>
+        </thead>
+        <tbody id="book-list">
+            <!-- ここにJavaScriptでデータを入れる -->
+        </tbody>
+    </table>
 
-    <ul>
-    {% for book in books %}
-    <li>{{ book.title }} - {{ book.status }}</li>
-    {% endfor %}
-    </ul>
+    <script>
+        async function loadBooks() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/books/?sort_by=new&limit=10');
+                const books = await response.json();
+                
+                const tableBody = document.getElementById('book-list');
+                tableBody.innerHTML = ''; // 中身を空にする
+
+                books.forEach(book => {
+                    const row = `
+                        <tr>
+                            <td><img src="${book.img_url}" alt="Book Image" style="width: 50px; height: auto;"></td>
+                            <td>${book.id}</td>
+                            <td>${book.title}</td>
+                            <td>${book.title_kana || '-'}</td>
+                            <td>${book.create_date || '-'}</td>
+                            <td>${book.status || '-'}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('データの取得に失敗:', error);
+            }
+        }
+
+        // ページが読み込まれたら実行
+        loadBooks();
+    </script>
 </body>
 </html>
