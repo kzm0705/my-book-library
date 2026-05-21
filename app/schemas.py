@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional
 from enum import Enum
 from datetime import datetime
+import re
 
 class BookStatus(str, Enum):
     WISH = "読みたい"
@@ -57,3 +58,15 @@ class SortBase(BaseModel):
     sort_by : Optional[str] = None
 
 
+class ISBNQuery(BaseModel):
+    isbn: str
+
+    @field_validator("isbn")
+    @classmethod
+    def valid_clean_isbn(cls, v:str):
+        cleaned_isbn = v.replace("-", "")
+        # 2. 数字だけで、かつ10桁か13桁かチェックする
+        if not re.match(r"^\d+$", cleaned_isbn) or len(cleaned_isbn) not in (10, 13):
+            raise ValueError("ISBNは10桁または13桁の正しい形式で入力してください")
+            
+        return cleaned_isbn
