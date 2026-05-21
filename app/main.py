@@ -64,25 +64,16 @@ def reading_books( db:Session = Depends(get_db), limit : int = Query(default=5, 
     return books
 
 @app.post("/create", response_model=schemas.Book)
-def create_book(isbn: str = Query(
-        ...,
-        min_length=10,
-        max_length=17,
-        pattern=r"^[0-9-]+$",
-        description="ISBNコード（10桁または13桁、ハイフン可）"
-    ),
-    db: Session = Depends(get_db)
-):
-
+def create_book(ISBN: schemas.ISBNQuery=Query(), db: Session = Depends(get_db)):
     # db_book = crud.created_book(db=db, book=book
-    book_data = external_api.get_book_info_from_opendb(isbn=isbn)
+    book_data = external_api.get_book_info_from_opendb(isbn=ISBN.isbn)
     if book_data is None:
         raise HTTPException(status_code=404, detail="APIから情報が取得できませんでした")
     
     new_book = schemas.BookCreate(
         title=book_data["title"],
         author=book_data["author"],
-        isbn=isbn,
+        isbn=ISBN.isbn,
         img_url=book_data["image_url"]
     )
 

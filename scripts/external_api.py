@@ -38,13 +38,13 @@ def get_book_info_from_opendb(isbn: str):
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        for item in data:
-            print(item)
+        # for item in data:
+        #     print(item)
 # OpenBDは該当がない場合 [None] を返すのでチェック
         if data and data[0] is not None:
             summary = data[0].get("summary", {})
-            if summary["cover"] == "":
-                cover_url = requests.get("https://image.opencover.jp/v1/cover/spine/{}.webp".format(isbn.replace("-", ""))).url
+            # if summary["cover"] == "":
+            #     cover_url = requests.get("https://image.opencover.jp/v1/cover/spine/{}.webp".format(isbn.replace("-", ""))).url
                 # print(cover_url)
 
             # summaryから基本情報を取得
